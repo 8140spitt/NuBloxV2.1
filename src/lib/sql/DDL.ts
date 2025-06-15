@@ -1,3 +1,5 @@
+//src/lib/sql/DDL.ts
+
 // --- SQL DIALECTS ---
 export type SqlDialects = 'mysql';
 
