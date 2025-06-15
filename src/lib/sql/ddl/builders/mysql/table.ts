@@ -3,27 +3,34 @@
 import type { TableDefinition, TableColumnDefinition, TableConstraintDefinition } from '../../types';
 import { escapeIdentifier, formatDefaultValue } from './utils';
 
-export function mysqlCreateTable(def: TableDefinition): string {
-    const columns = def.columns.map(mysqlColumnBuilder).join(',\n  ');
-    const constraints = def.constraints?.map(mysqlConstraintBuilder).join(',\n  ') ?? '';
+export function createTable(def: TableDefinition): string {
+    const tableName = def.schema
+        ? `${escapeIdentifier(def.schema)}.${escapeIdentifier(def.name)}`
+        : escapeIdentifier(def.name);
 
+    const columns = def.columns.map(buildColumn).join(',\n  ');
+    const constraints = def.constraints?.map(buildConstraint).join(',\n  ') ?? '';
     const body = [columns, constraints].filter(Boolean).join(',\n  ');
 
-    return `CREATE TABLE \`${def.name}\` (\n  ${body}\n)`;
+    const ifNotExists = def.ifNotExists ? 'IF NOT EXISTS ' : '';
+    const temporary = def.temporary ? 'TEMPORARY ' : '';
+    const comment = def.comment ? ` COMMENT='${def.comment.replace(/'/g, "''")}'` : '';
+
+    return `CREATE ${temporary}TABLE ${ifNotExists}${tableName} (\n  ${body}\n)${comment}`;
 }
 
-function mysqlColumnBuilder(col: TableColumnDefinition): string {
+function buildColumn(col: TableColumnDefinition): string {
     const parts: string[] = [];
-    parts.push(`\`${col.name}\` ${col.type}`);
 
+    let type = col.type;
     if (col.length !== undefined) {
-        if (Array.isArray(col.length)) {
-            parts[0] += `(${col.length.join(',')})`;
-        } else {
-            parts[0] += `(${col.length})`;
-        }
+        const len = Array.isArray(col.length)
+            ? `(${col.length.join(',')})`
+            : `(${col.length})`;
+        type += len;
     }
 
+    parts.push(`${escapeIdentifier(col.name)} ${type}`);
     if (col.unsigned) parts.push('UNSIGNED');
     if (col.zerofill) parts.push('ZEROFILL');
     if (col.isNotNull) parts.push('NOT NULL');
@@ -35,17 +42,42 @@ function mysqlColumnBuilder(col: TableColumnDefinition): string {
     return parts.join(' ');
 }
 
-function mysqlConstraintBuilder(con: TableConstraintDefinition): string {
-    const cols = con.columns.map(c => `\`${c}\``).join(', ');
+function buildConstraint(con: TableConstraintDefinition): string {
     switch (con.type) {
         case 'PRIMARY KEY':
-            return `PRIMARY KEY (${cols})`;
+            return buildPrimaryKey(con);
         case 'UNIQUE':
-            return `UNIQUE (${cols})`;
+            return buildUnique(con);
         case 'FOREIGN KEY':
-            return `FOREIGN KEY (${cols}) REFERENCES \`${con.referenceTable}\` (${con.referenceColumns?.map(c => `\`${c}\``).join(', ')})` +
-                (con.onDelete ? ` ON DELETE ${con.onDelete}` : '') +
-                (con.onUpdate ? ` ON UPDATE ${con.onUpdate}` : '');
+            return buildForeignKey(con);
+        case 'CHECK':
+            return buildCheck(con);
     }
 }
 
+function buildPrimaryKey(con: TableConstraintDefinition): string {
+    const name = con.name ? `CONSTRAINT ${escapeIdentifier(con.name)} ` : '';
+    const cols = con.columns.map(escapeIdentifier).join(', ');
+    return `${name}PRIMARY KEY (${cols})`;
+}
+
+function buildUnique(con: TableConstraintDefinition): string {
+    const name = con.name ? `CONSTRAINT ${escapeIdentifier(con.name)} ` : '';
+    const cols = con.columns.map(escapeIdentifier).join(', ');
+    return `${name}UNIQUE (${cols})`;
+}
+
+function buildForeignKey(con: TableConstraintDefinition): string {
+    const name = con.name ? `CONSTRAINT ${escapeIdentifier(con.name)} ` : '';
+    const cols = con.columns.map(escapeIdentifier).join(', ');
+    const refs = (con.referenceColumns ?? []).map(escapeIdentifier).join(', ');
+    let stmt = `${name}FOREIGN KEY (${cols}) REFERENCES ${escapeIdentifier(con.referenceTable!)} (${refs})`;
+    if (con.onDelete) stmt += ` ON DELETE ${con.onDelete}`;
+    if (con.onUpdate) stmt += ` ON UPDATE ${con.onUpdate}`;
+    return stmt;
+}
+
+function buildCheck(con: TableConstraintDefinition): string {
+    const name = con.name ? `CONSTRAINT ${escapeIdentifier(con.name)} ` : '';
+    return `${name}CHECK (${con.checkExpression ?? 'TRUE'})`;
+}

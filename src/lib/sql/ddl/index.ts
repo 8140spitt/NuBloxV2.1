@@ -1,12 +1,12 @@
 // src/lib/sql/ddl/index.ts
 
 import type { TableDefinition, SqlDialects } from './types';
-import { mysqlCreateTable } from './builders/mysql/table';
+import { createTable } from './builders/mysql/table';
 
-export function createTable(dialect: SqlDialects, def: TableDefinition): string {
+export function sqlCreateTable(dialect: SqlDialects, def: TableDefinition): string {
     switch (dialect) {
         case 'mysql':
-            return mysqlCreateTable(def);
+            return createTable(def);
         default:
             throw new Error(`Unsupported dialect: ${dialect}`);
     }
