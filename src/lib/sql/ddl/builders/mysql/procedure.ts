@@ -1,4 +1,4 @@
-import { ProcedureDefinition } from '../../types';
+import type { ProcedureDefinition } from '../../types';
 import { escapeIdentifier } from './utils';
 
 export function createProcedure(def: ProcedureDefinition): string {

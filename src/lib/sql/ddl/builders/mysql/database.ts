@@ -1,4 +1,4 @@
-import { DatabaseDefinition } from '../../types';
+import type { DatabaseDefinition } from '../../types';
 import { escapeIdentifier } from './utils';
 
 export function createDatabase(def: DatabaseDefinition): string {

@@ -1,4 +1,4 @@
-import { EventDefinition } from '../../types';
+import type { EventDefinition } from '../../types';
 import { escapeIdentifier } from './utils';
 
 export function createEvent(def: EventDefinition): string {

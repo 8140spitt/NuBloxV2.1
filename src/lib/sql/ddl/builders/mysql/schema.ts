@@ -1,4 +1,4 @@
-import { SchemaDefinition } from '../../types';
+import type { SchemaDefinition } from '../../types';
 import { escapeIdentifier } from './utils';
 
 export function createSchema(def: SchemaDefinition): string {

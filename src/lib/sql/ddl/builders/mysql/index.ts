@@ -1,4 +1,4 @@
-import { IndexDefinition } from '../../types';
+import type { IndexDefinition } from '../../types';
 import { escapeIdentifier } from './utils';
 
 export function createIndex(def: IndexDefinition): string {
