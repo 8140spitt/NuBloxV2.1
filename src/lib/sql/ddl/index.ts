@@ -1,7 +1,7 @@
 // src/lib/sql/ddl/index.ts
 
 import type { TableDefinition, SqlDialects } from './types';
-import { mysqlCreateTable } from './builders/mysql/createTable';
+import { mysqlCreateTable } from './builders/mysql/table';
 
 export function createTable(dialect: SqlDialects, def: TableDefinition): string {
     switch (dialect) {

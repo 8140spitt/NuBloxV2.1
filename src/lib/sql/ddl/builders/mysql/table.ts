@@ -1,7 +1,4 @@
-
-
-
-// src/lib/sql/ddl/builders/mysql/createTable.ts
+// src/lib/sql/ddl/builders/mysql/table.ts
 
 import type { TableDefinition, TableColumnDefinition, TableConstraintDefinition } from '../../types';
 import { escapeIdentifier, formatDefaultValue } from './utils';
