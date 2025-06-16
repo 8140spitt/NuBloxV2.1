@@ -1,38 +1,136 @@
-# sv
+Here’s a polished `README.md` for **NuBlox**, tailored for your GitHub repo:
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+---
 
-## Creating a project
+````markdown
+# NuBlox
 
-If you're seeing this, you've probably already done this step. Congrats!
+**NuBlox** is a **SQL-agnostic, low-code application builder** and **visual database studio** — an open-source alternative to Oracle APEX that works with **any SQL dialect**.
+
+Built with SvelteKit and designed for flexibility, NuBlox helps developers and teams rapidly model, build, and deploy applications on top of **MySQL, PostgreSQL, SQLite**, and more — without being locked into a single vendor.
+
+---
+
+## 🚀 Features
+
+- ⚙️ **SQL Dialect Agnostic**  
+  Generate DDL/DML for multiple SQL engines from a unified schema model.
+
+- 🧱 **Visual Schema Builder**  
+  Drag-and-drop interface for designing tables, columns, constraints, and relationships.
+
+- 🧰 **ORM-Ready DSL**  
+  Use JavaScript/TypeScript to define schemas programmatically — no third-party libraries required.
+
+- 🔐 **Built-in Auth + Session Management**  
+  Out-of-the-box user/session handling with secure password hashing and token workflows.
+
+- 🎨 **No-Code UI Builder (Coming Soon)**  
+  Define interfaces declaratively, connect them to database views, and auto-generate admin apps.
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend**: SvelteKit (Svelte 5)
+- **Backend**: Custom logic, no 3rd-party ORMs
+- **Database**: MySQL (default), multi-dialect support planned
+- **Auth**: Native password + token-based authentication
+
+---
+
+## 📦 Installation
+
+> ⚠️ NuBlox is in early development. Expect breaking changes and incomplete features.
 
 ```bash
-# create a new project in the current directory
-npx sv create
+git clone https://github.com/8140spitt/NuBloxV2.1.git
+cd NuBloxV2.1
+pnpm install
+pnpm dev
+````
 
-# create a new project in my-app
-npx sv create my-app
+Make sure your `.env` file is configured for MySQL or your preferred SQL backend.
+
+---
+
+## 📄 Example: Defining a Schema
+
+```ts
+const schema = {
+  name: 'nublox',
+  ifNotExists: true,
+  charset: 'utf8mb4',
+  collation: 'utf8mb4_general_ci',
+  tables: [
+    {
+      name: 'users',
+      ifNotExists: true,
+      columns: [
+        { name: 'id', type: 'INT', primaryKey: true, autoIncrement: true },
+        { name: 'username', type: 'VARCHAR(255)', unique: true, notNull: true },
+        { name: 'email', type: 'VARCHAR(255)', unique: true, notNull: true },
+        { name: 'password', type: 'VARCHAR(255)', notNull: true },
+        { name: 'created_at', type: 'TIMESTAMP', defaultValue: 'CURRENT_TIMESTAMP' }
+      ]
+    }
+  ]
+};
 ```
 
-## Developing
+Generate SQL output from this schema with:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+```ts
+import { generateCreateDatabaseSQL } from '$lib/sql/DDL';
+
+const sql = generateCreateDatabaseSQL(schema, 'mysql');
+console.log(sql);
+```
+
+---
+
+## 🧩 Roadmap
+
+* [x] MySQL schema generation
+* [x] Visual table/column builder
+* [ ] PostgreSQL & SQLite dialect support
+* [ ] UI Form Builder
+* [ ] REST API scaffolding
+* [ ] Role-based access control
+* [ ] Multi-tenant support
+
+---
+
+## 💬 Contributing
+
+NuBlox is a work in progress. Contributions, suggestions, and PRs are welcome!
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# Start developing
+pnpm dev
 ```
 
-## Building
+Open issues or improvements via GitHub or contact me directly.
 
-To create a production version of your app:
+---
 
-```bash
-npm run build
+## 📜 License
+
+MIT — Free for personal and commercial use.
+
+---
+
+## 🌐 Links
+
+* 🔗 [Live Demo (coming soon)]()
+* 📚 Docs (in progress)
+* 🧠 Built by [@8140spitt](https://github.com/8140spitt)
+
+---
+
 ```
 
-You can preview the production build with `npm run preview`.
+---
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Let me know if you want a matching `CONTRIBUTING.md`, `docs/` site structure, or deploy guides (e.g. Vercel, Docker, PlanetScale).
+```
