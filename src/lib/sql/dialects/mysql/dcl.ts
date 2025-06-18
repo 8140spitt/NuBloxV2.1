@@ -1,6 +1,6 @@
 // src/lib/sql/dialects/mysql/dcl.ts
 
-import { GrantIR, RevokeIR } from '$lib/types/ir-dcl';
+import type { GrantIR, RevokeIR } from '$lib/sql/types/ir-dcl';
 import { quoteIdentifier as q } from '$lib/sql/utils/sql-escape';
 
 export function generateGrant(ir: GrantIR): string {
